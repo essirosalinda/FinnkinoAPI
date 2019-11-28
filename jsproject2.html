@@ -1,0 +1,122 @@
+
+<html>
+<head>
+<title>Finnkino</title>
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<script>
+
+var url="https://www.finnkino.fi/xml/TheatreAreas/";
+
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.open("GET",url, true);
+xmlhttp.send();
+
+xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+        var x, data, table;
+    data = xmlhttp.responseXML;
+    console.log(data);
+    table =   '<select id="valikko" onchange="loadXMLFile()">';
+    x = data.getElementsByTagName("TheatreArea");
+
+    for (i=0; i<x.length;i++) {
+        table += "<option value='" + x[i].getElementsByTagName("ID")[0].innerHTML + "'>" +
+          x[i].getElementsByTagName("Name")[0].childNodes[0].nodeValue + "</option>";
+
+
+      }
+      document.getElementById("myDropdown").innerHTML = table;
+    }
+}
+
+</script>
+<body>
+<h1>Finnkino näytösajat</h1>
+<br>
+<p>Valitse kaupunki nähdäksesi tämän päivän näytökset.</p>
+
+
+
+<div class="dropdown">
+  <button onclick="myFunction()" class="dropbtn">Valitse kaupunki</button>
+  <div id="myDropdown" class="dropdown-content">
+
+    <select id="valikko" onchange="loadXMLFile()">
+ 
+</select>
+
+  </div>
+</div>
+
+<br>
+<br>
+
+<table id="table" border="1">
+        <tr><th>Image</th><th>Title</th><th>Genre</th><th>Time</th><th>Rating</th></tr>
+        </table>
+<div id="data"></div>
+
+
+
+</body>
+<script>
+
+        function loadXMLFile() {
+
+        var id = document.getElementById("valikko").value;
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET","http://www.finnkino.fi/xml/Schedule/?area=" + id, true);
+        xmlhttp.send();
+
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                var x, data, table;
+            data = xmlhttp.responseXML;
+            console.log(data);
+            table = "<tr><th>Kuva</th><th>Nimi</th><th>Genre</th><th>Aika</th><th>Teatteri</th><th>Sali</th><th>Ikäraja</th></tr>";
+            x = data.getElementsByTagName("Show");
+
+            for (i=0; i<x.length;i++) {
+                table += "<tr><td><img src='" + x[i].getElementsByTagName("Images")[0].childNodes[1].innerHTML + "'>" +"<td>"+
+                  x[i].getElementsByTagName("Title")[0].childNodes[0].nodeValue + "</td><td>" +
+                    x[i].getElementsByTagName("Genres")[0].childNodes[0].nodeValue + "</td><td>"+
+                    x[i].getElementsByTagName("dttmShowStart")[0].childNodes[0].nodeValue + "</td><td>" +
+                      x[i].getElementsByTagName("Theatre")[0].innerHTML + "</td><td>" +
+                        x[i].getElementsByTagName("TheatreAuditorium")[0].innerHTML + "</td><td>" +
+                    "<img src='" + x[i].getElementsByTagName("RatingImageUrl")[0].innerHTML + "'>" +"</td>";
+
+
+              }
+              document.getElementById("table").innerHTML = table;
+            }
+        }
+
+        }
+
+
+
+    function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  function filterFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+      txtValue = a[i].textContent || a[i].innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        a[i].style.display = "";
+      } else {
+        a[i].style.display = "none";
+      }
+    }
+  }
+
+        </script>
+
+</html>
